@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>2D Mechanical Component Drawing — CAD Project</title>
+<style>
+  :root{
+    --bg:#0d1520;
+    --panel:#141f30;
+    --panel2:#182640;
+    --accent:#f5a83f;
+    --accent2:#7ee0c3;
+    --text:#e8edf5;
+    --muted:#8ea0bd;
+    --border:#233350;
+    --paper:#0a1220;
+    --line:#e8edf5;
+    --dim:#f5a83f;
+    --center:#7ee0c3;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; padding:0; max-width:480px; margin:0 auto;
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  header{
+    padding:22px 18px 16px; text-align:center;
+    background:linear-gradient(160deg,#152238,#0d1520);
+    border-bottom:1px solid var(--border);
+  }
+  header h1{margin:0 0 4px; font-size:18px; letter-spacing:.3px;}
+  header p{margin:0; color:var(--muted); font-size:12.5px;}
+  .badges{display:flex; gap:6px; justify-content:center; margin-top:10px; flex-wrap:wrap;}
+  .badge{
+    font-size:10.5px; padding:4px 9px; border-radius:20px;
+    background:var(--panel2); color:var(--accent2); border:1px solid var(--border);
+  }
+  main{padding:16px;}
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:16px; margin-bottom:14px;
+  }
+  .card h2{
+    font-size:13.5px; text-transform:uppercase; letter-spacing:.6px;
+    color:var(--accent2); margin:0 0 12px; display:flex; align-items:center; gap:6px;
+  }
+  .drawing-wrap{
+    background:var(--paper); border:1px solid var(--border); border-radius:10px;
+    padding:8px; overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  .toggles{display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;}
+  .toggle-btn{
+    font-size:11px; padding:6px 10px; border-radius:8px; background:var(--panel2);
+    color:var(--muted); border:1px solid var(--border);
+  }
+  .toggle-btn.active{background:var(--accent); color:#1a1200; border-color:var(--accent);}
+  .spec-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .spec-table td{padding:7px 4px; border-bottom:1px solid var(--border);}
+  .spec-table td:first-child{color:var(--muted);}
+  .spec-table td:last-child{text-align:right; font-weight:600; color:var(--text);}
+  .cmd-list{display:flex; flex-direction:column; gap:8px;}
+  .cmd{
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--panel2); border:1px solid var(--border); border-radius:9px; padding:9px 12px;
+  }
+  .cmd .name{font-family:ui-monospace,Menlo,Consolas,monospace; color:var(--accent2); font-size:12.5px; font-weight:600;}
+  .cmd .desc{font-size:11px; color:var(--muted);}
+  .steps-list{counter-reset:step; padding:0; margin:0; list-style:none;}
+  .steps-list li{
+    counter-increment:step; position:relative; padding:8px 0 8px 34px; font-size:12.5px;
+    color:var(--text); border-bottom:1px solid var(--border);
+  }
+  .steps-list li:last-child{border-bottom:none;}
+  .steps-list li::before{
+    content:counter(step); position:absolute; left:0; top:7px;
+    width:22px; height:22px; border-radius:50%; background:var(--accent);
+    color:#1a1200; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;
+  }
+  .app-list{list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:6px;}
+  .app-list li{
+    font-size:11.5px; padding:6px 10px; border-radius:8px; background:var(--panel2);
+    color:var(--text); border:1px solid var(--border);
+  }
+  footer{
+    text-align:center; padding:18px 16px 26px; font-size:11px; color:var(--muted);
+    border-top:1px solid var(--border);
+  }
+  footer a{color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>2D Mechanical Component Drawing</h1>
+  <p>Engineering Graphics &amp; CAD Modeling &nbsp;•&nbsp; GSSIPU Semester 2</p>
+  <div class="badges">
+    <span class="badge">CAD Design Project</span>
+    <span class="badge">Beginner</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>▸ Interactive Drawing — Mounting Plate</h2>
+    <div class="drawing-wrap">
+      <svg id="cadSvg" viewBox="0 0 440 340" width="100%" style="min-width:420px;">
+        <!-- Rectangle: plate 120x80, scale 3px/mm, origin offset -->
+        <g id="layer-outline">
+          <rect x="60" y="80" width="240" height="160" fill="none" stroke="#e8edf5" stroke-width="2"/>
+        </g>
+
+        <g id="layer-holes">
+          <!-- hole spacing 60mm horiz -> 180px between hole rows spaced from edges;
+               plate 240 wide, holes at 60px & 120px inset for spacing symmetry -->
+          <circle cx="120" cy="120" r="15" fill="none" stroke="#e8edf5" stroke-width="2"/>
+          <circle cx="240" cy="120" r="15" fill="none" stroke="#e8edf5" stroke-width="2"/>
+          <circle cx="120" cy="200" r="15" fill="none" stroke="#e8edf5" stroke-width="2"/>
+          <circle cx="240" cy="200" r="15" fill="none" stroke="#e8edf5" stroke-width="2"/>
+        </g>
+
+        <g id="layer-center" stroke="#7ee0c3" stroke-width="1" stroke-dasharray="6,3,1,3">
+          <line x1="120" y1="100" x2="120" y2="140"/>
+          <line x1="100" y1="120" x2="140" y2="120"/>
+          <line x1="240" y1="100" x2="240" y2="140"/>
+          <line x1="220" y1="120" x2="260" y2="120"/>
+          <line x1="120" y1="180" x2="120" y2="220"/>
+          <line x1="100" y1="200" x2="140" y2="200"/>
+          <line x1="240" y1="180" x2="240" y2="220"/>
+          <line x1="220" y1="200" x2="260" y2="200"/>
+        </g>
+
+        <g id="layer-dims" stroke="#f5a83f" stroke-width="1" fill="#f5a83f" font-size="11" font-family="ui-monospace,Menlo,Consolas,monospace">
+          <!-- overall length 120mm -->
+          <line x1="60" y1="260" x2="300" y2="260"/>
+          <line x1="60" y1="252" x2="60" y2="268"/>
+          <line x1="300" y1="252" x2="300" y2="268"/>
+          <text x="150" y="278" text-anchor="middle">120 mm</text>
+
+          <!-- overall width 80mm -->
+          <line x1="330" y1="80" x2="330" y2="240"/>
+          <line x1="322" y1="80" x2="338" y2="80"/>
+          <line x1="322" y1="240" x2="338" y2="240"/>
+          <text x="345" y="164" text-anchor="start" transform="rotate(90 345 164)">80 mm</text>
+
+          <!-- hole spacing 60mm -->
+          <line x1="120" y1="60" x2="240" y2="60"/>
+          <line x1="120" y1="54" x2="120" y2="66"/>
+          <line x1="240" y1="54" x2="240" y2="66"/>
+          <text x="180" y="50" text-anchor="middle">60 mm</text>
+
+          <!-- hole diameter callout -->
+          <line x1="240" y1="120" x2="270" y2="95" stroke-dasharray="0"/>
+          <text x="272" y="93" text-anchor="start">⌀20 mm</text>
+        </g>
+
+        <g id="layer-labels" fill="#8ea0bd" font-size="10" font-family="-apple-system,sans-serif">
+          <text x="60" y="300">TOP VIEW — MOUNTING_PLATE_2D — SCALE 1:1 — UNITS: mm</text>
+        </g>
+      </svg>
+    </div>
+    <div class="toggles">
+      <button class="toggle-btn active" data-layer="layer-outline">Outline</button>
+      <button class="toggle-btn active" data-layer="layer-holes">Holes</button>
+      <button class="toggle-btn active" data-layer="layer-center">Center Lines</button>
+      <button class="toggle-btn active" data-layer="layer-dims">Dimensions</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>▸ Component Specifications</h2>
+    <table class="spec-table">
+      <tr><td>Component</td><td>Mechanical Mounting Plate</td></tr>
+      <tr><td>Length</td><td>120 mm</td></tr>
+      <tr><td>Width</td><td>80 mm</td></tr>
+      <tr><td>Thickness</td><td>10 mm</td></tr>
+      <tr><td>Hole Diameter</td><td>20 mm</td></tr>
+      <tr><td>Hole Spacing</td><td>60 mm</td></tr>
+      <tr><td>Scale</td><td>1 : 1</td></tr>
+      <tr><td>Units</td><td>Millimeters</td></tr>
+      <tr><td>File Name</td><td>Mounting_Plate_2D.dwg</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>▸ CAD Commands Used</h2>
+    <div class="cmd-list">
+      <div class="cmd"><span class="name">LINE</span><span class="desc">Creates straight lines</span></div>
+      <div class="cmd"><span class="name">CIRCLE</span><span class="desc">Creates circular holes</span></div>
+      <div class="cmd"><span class="name">OFFSET</span><span class="desc">Creates parallel lines</span></div>
+      <div class="cmd"><span class="name">TRIM</span><span class="desc">Removes unwanted portions</span></div>
+      <div class="cmd"><span class="name">DIM</span><span class="desc">Adds dimensions</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>▸ Procedure</h2>
+    <ol class="steps-list">
+      <li>Open CAD software</li>
+      <li>Set units to millimeters (mm)</li>
+      <li>Draw rectangle: 120 mm × 80 mm</li>
+      <li>Mark hole centers</li>
+      <li>Draw circles — diameter 20 mm</li>
+      <li>Apply dimensions</li>
+      <li>Add center lines</li>
+      <li>Save drawing as Mounting_Plate_2D.dwg</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>▸ Engineering Standards Followed</h2>
+    <table class="spec-table">
+      <tr><td>Dimensioning</td><td>All measurements shown clearly</td></tr>
+      <tr><td>Center Lines</td><td>Used for circular holes</td></tr>
+      <tr><td>Scale</td><td>1 : 1</td></tr>
+      <tr><td>Units</td><td>Millimeters</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>▸ Applications</h2>
+    <ul class="app-list">
+      <li>Mechanical Engineering</li>
+      <li>Civil Engineering</li>
+      <li>Automobile Industry</li>
+      <li>Manufacturing</li>
+      <li>Aerospace</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>▸ Advantages of CAD</h2>
+    <ul class="app-list">
+      <li>High Precision</li>
+      <li>Easy Modification</li>
+      <li>Professional Output</li>
+      <li>Faster Design Process</li>
+      <li>Industry Standard</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer>
+  2D Mechanical Component Drawing — CAD Design Mini Project<br>
+  GSSIPU Semester 2 · Mayank Swaraj<br>
+  <a href="https://github.com/mayankswaraj18cr-cmd" target="_blank">GitHub</a> ·
+  <a href="https://linkedin.com/in/mayank-swaraj-4b84b6410" target="_blank">LinkedIn</a>
+</footer>
+
+<script>
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const layerId = btn.dataset.layer;
+    const layer = document.getElementById(layerId);
+    const active = btn.classList.toggle('active');
+    layer.style.display = active ? '' : 'none';
+  });
+});
+</script>
+
+</body>
+</html>
